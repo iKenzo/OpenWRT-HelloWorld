@@ -35,6 +35,17 @@ jobs:
             target: x86-64
 
     steps:
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -76,7 +87,7 @@ jobs:
           V: s
 
       - name: Move created packages to project dir
-        run: cp bin/packages/${{ matrix.arch }}/packages_ci/*.ipk . || true
+        run: cp bin/packages/${{ matrix.arch }}/packages_ci/*.apk . || true
 
       - name: Collect metadata
         run: |
@@ -111,21 +122,21 @@ jobs:
           done
           echo >> PKG-INFO
           echo Full file listing: >> PKG-INFO
-          ls -al *.ipk >> PKG-INFO || true
+          ls -al *.apk >> PKG-INFO || true
           cat PKG-INFO
 
       - name: Store packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARCHIVE_NAME}}-packages
           path: |
             Packages
             Packages.*
-            *.ipk
+            *.apk
             PKG-INFO
 
       - name: Store logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{env.ARCHIVE_NAME}}-logs
           path: |
